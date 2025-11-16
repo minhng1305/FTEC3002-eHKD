@@ -1,0 +1,1123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>e-HKD+ Connect Demo</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #003366; /* Deep blue for trust */
+            --secondary-color: #007bff; /* Brighter blue for actions */
+            --accent-color: #e60000; /* Red accent, from HK flag */
+            --background-color: #f4f7fa; /* Light grey background */
+            --text-color: #333;
+            --light-text-color: #fff;
+            --border-color: #e0e0e0;
+            --success-color: #28a745;
+            --warning-color: #ffc107;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background-color: #ccc;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            color: var(--text-color);
+        }
+
+        .mobile-frame {
+            width: 100%;
+            max-width: 420px;
+            height: 850px;
+            background-color: var(--background-color);
+            border-radius: 40px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            overflow: hidden;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Login Screen */
+        #login-container {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+            padding: 40px;
+            background: linear-gradient(180deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            color: var(--light-text-color);
+        }
+
+        .logo {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+        }
+
+        .logo i {
+            margin-right: 15px;
+            color: var(--accent-color);
+        }
+        
+        #login-container h2 {
+            font-weight: 300;
+            font-size: 1rem;
+            margin-bottom: 40px;
+            opacity: 0.9;
+        }
+
+        .login-form input {
+            width: 100%;
+            padding: 15px;
+            margin-bottom: 15px;
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            background-color: rgba(255,255,255,0.1);
+            color: var(--light-text-color);
+            font-size: 1rem;
+        }
+        .login-form input::placeholder {
+            color: rgba(255,255,255,0.7);
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 10px;
+            background-color: var(--light-text-color);
+            color: var(--primary-color);
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            margin-bottom: 20px;
+            transition: background-color 0.3s;
+        }
+        .login-btn:hover {
+            background-color: #eee;
+        }
+
+        .iam-smart-btn {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid var(--light-text-color);
+            border-radius: 10px;
+            background-color: transparent;
+            color: var(--light-text-color);
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: background-color 0.3s;
+        }
+        .iam-smart-btn:hover {
+            background-color: rgba(255,255,255,0.1);
+        }
+        .iam-smart-btn img {
+            width: 24px;
+            margin-right: 10px;
+        }
+
+        /* Main App */
+        #app-container {
+            display: none;
+            flex-direction: column;
+            height: 100%;
+            width: 100%;
+        }
+
+        .app-header {
+            padding: 20px 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: var(--light-text-color);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .app-header .user-info {
+            font-weight: 500;
+        }
+        .app-header .user-info span {
+            font-weight: 300;
+            font-size: 0.9rem;
+        }
+        .app-header .notification-bell {
+            font-size: 1.5rem;
+            color: var(--primary-color);
+            position: relative;
+        }
+        .notification-dot {
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 8px;
+            height: 8px;
+            background-color: var(--accent-color);
+            border-radius: 50%;
+            display: none; /* Initially hidden */
+        }
+
+        .app-main {
+            flex-grow: 1;
+            overflow-y: auto;
+            padding-bottom: 80px; /* Space for nav bar */
+        }
+
+        .app-page {
+            display: none;
+            padding: 25px;
+            animation: fadeIn 0.5s;
+        }
+        .app-page.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Dashboard Page */
+        .balance-card {
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            color: var(--light-text-color);
+            padding: 30px;
+            border-radius: 20px;
+            text-align: center;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 15px rgba(0, 123, 255, 0.3);
+        }
+        .balance-card .balance-label {
+            font-size: 1rem;
+            font-weight: 300;
+            opacity: 0.8;
+        }
+        .balance-card .balance-amount {
+            font-size: 2.8rem;
+            font-weight: 600;
+            margin: 5px 0;
+        }
+        .balance-card .balance-currency {
+            font-size: 1.2rem;
+            font-weight: 400;
+        }
+
+        .action-buttons {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .action-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+            text-decoration: none;
+            color: var(--text-color);
+        }
+        .action-btn .icon-wrapper {
+            width: 60px;
+            height: 60px;
+            background-color: #fff;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.5rem;
+            color: var(--secondary-color);
+            margin-bottom: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            transition: transform 0.2s;
+        }
+        .action-btn:hover .icon-wrapper {
+            transform: scale(1.1);
+        }
+        .action-btn span {
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .section-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+
+        .transaction-list {
+            list-style: none;
+        }
+        .transaction-item {
+            display: flex;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .transaction-item:last-child {
+            border-bottom: none;
+        }
+        .transaction-icon {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: var(--light-text-color);
+            font-size: 1.2rem;
+            margin-right: 15px;
+        }
+        .transaction-details {
+            flex-grow: 1;
+        }
+        .transaction-details .description {
+            font-weight: 500;
+        }
+        .transaction-details .date {
+            font-size: 0.8rem;
+            color: #777;
+        }
+        .transaction-amount {
+            font-weight: 600;
+        }
+        .transaction-amount.credit {
+            color: var(--success-color);
+        }
+        .transaction-amount.debit {
+            color: var(--accent-color);
+        }
+
+        /* Bottom Navigation */
+        .bottom-nav {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 75px;
+            background-color: #fff;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            border-top: 1px solid var(--border-color);
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
+            border-bottom-left-radius: 40px;
+            border-bottom-right-radius: 40px;
+        }
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            font-size: 0.75rem;
+            color: #999;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+        .nav-item i {
+            font-size: 1.5rem;
+            margin-bottom: 5px;
+        }
+        .nav-item.active {
+            color: var(--secondary-color);
+        }
+        .nav-item:hover {
+            color: var(--secondary-color);
+        }
+
+        /* Pages: Transactions, Gov, Rewards, Settings */
+        .list-item {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .list-item:hover {
+            transform: translateY(-3px);
+        }
+        .list-item-icon {
+            font-size: 1.8rem;
+            color: var(--secondary-color);
+            margin-right: 20px;
+            width: 30px;
+            text-align: center;
+        }
+        .list-item-content {
+            flex-grow: 1;
+        }
+        .list-item-content h4 {
+            font-weight: 600;
+        }
+        .list-item-content p {
+            font-size: 0.9rem;
+            color: #666;
+        }
+        .list-item-action {
+            font-size: 1.2rem;
+            color: #ccc;
+        }
+
+        /* Rewards Page Specifics */
+        .rewards-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .rewards-points {
+            font-size: 3rem;
+            font-weight: 700;
+            color: var(--warning-color);
+        }
+        .rewards-points-label {
+            font-size: 1rem;
+            color: #666;
+        }
+        
+        .mission-item.completed .list-item-icon {
+            color: var(--success-color);
+        }
+        .mission-item.completed .list-item-content p {
+            text-decoration: line-through;
+        }
+        .mission-item.completed .list-item-action i {
+            color: var(--success-color);
+        }
+
+        /* Settings Page Specifics */
+        .setting-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 28px;
+        }
+        .switch input { display: none; }
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 34px;
+        }
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 20px;
+            width: 20px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        input:checked + .slider {
+            background-color: var(--secondary-color);
+        }
+        input:checked + .slider:before {
+            transform: translateX(22px);
+        }
+        
+        #logout-btn {
+            width: 100%;
+            padding: 15px;
+            margin-top: 30px;
+            border: none;
+            border-radius: 10px;
+            background-color: var(--accent-color);
+            color: var(--light-text-color);
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        /* Modal Styles */
+        .modal-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.6);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        .modal-content {
+            background: var(--light-text-color);
+            padding: 30px;
+            border-radius: 20px;
+            width: 90%;
+            max-width: 380px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+            animation: slideUp 0.4s;
+        }
+        @keyframes slideUp {
+            from { transform: translateY(50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .modal-title {
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+        .close-modal {
+            font-size: 1.8rem;
+            color: #999;
+            cursor: pointer;
+        }
+        .modal-body input, .modal-body select {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 15px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+        .modal-body .modal-btn {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 10px;
+            background-color: var(--secondary-color);
+            color: var(--light-text-color);
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        #international-fields {
+            display: none;
+        }
+        .currency-input {
+            position: relative;
+        }
+        .currency-input span {
+            position: absolute;
+            left: 12px;
+            top: 12px;
+            font-weight: 600;
+            color: #888;
+        }
+        .currency-input input {
+            padding-left: 55px;
+        }
+        
+        /* Notification Toast */
+        .toast {
+            position: absolute;
+            bottom: 90px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: rgba(0,0,0,0.8);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 25px;
+            font-size: 0.9rem;
+            z-index: 2000;
+            opacity: 0;
+            transition: opacity 0.5s, bottom 0.5s;
+            pointer-events: none;
+        }
+        .toast.show {
+            opacity: 1;
+            bottom: 100px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="mobile-frame">
+
+        <!-- ===== LOGIN SCREEN ===== -->
+        <div id="login-container">
+            <div class="logo">
+                <i class="fas fa-wallet"></i>
+                <span>e-HKD+</span>
+            </div>
+            <h2>A Secure Government-Backed Digital Currency Wallet</h2>
+            <div class="login-form">
+                <input type="text" id="username" placeholder="Username" value="demo_user">
+                <input type="password" id="password" placeholder="Password" value="password">
+                <button class="login-btn" id="login-btn">Login</button>
+                <button class="iam-smart-btn" id="iam-smart-login-btn">
+                    <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTEyIDBDNS4zNzMgMCAwIDUuMzczIDAgMTJDNy4zNzMgMTIgMTIgNy4zNzMgMTIgMFoiIGZpbGw9IndoaXRlIi8+CjxwYXRoIGQ9Ik0xMiAyNEMxOC42MjcgMjQgMjQgMTguNjI3IDI0IDEyQzE2LjYyNyAxMiAxMiAxNi42MjcgMTIgMjRaIiBmaWxsPSJ3aGl0ZSIvPgo8L3N2Zz4K" alt="iAM Smart">
+                    Login with iAM Smart
+                </button>
+            </div>
+        </div>
+
+        <!-- ===== MAIN APP INTERFACE ===== -->
+        <div id="app-container">
+            <header class="app-header">
+                <div class="user-info">
+                    <span>Welcome back,</span><br>
+                    <strong>Clement</strong>
+                </div>
+                <div class="notification-bell">
+                    <i class="fas fa-bell"></i>
+                    <div id="notification-dot" class="notification-dot"></div>
+                </div>
+            </header>
+
+            <main class="app-main">
+                <!-- Dashboard Page -->
+                <div id="dashboard-page" class="app-page active">
+                    <div class="balance-card">
+                        <div class="balance-label">Total Balance</div>
+                        <div class="balance-amount" id="balance-amount">15,850.00</div>
+                        <div class="balance-currency">e-HKD</div>
+                    </div>
+
+                    <div class="action-buttons">
+                        <a href="#" class="action-btn" data-modal="send-money-modal">
+                            <div class="icon-wrapper"><i class="fas fa-paper-plane"></i></div>
+                            <span>Send</span>
+                        </a>
+                        <a href="#" class="action-btn" data-modal="receive-money-modal">
+                            <div class="icon-wrapper"><i class="fas fa-qrcode"></i></div>
+                            <span>Receive</span>
+                        </a>
+                        <a href="#" class="action-btn" data-modal="pay-bill-modal">
+                            <div class="icon-wrapper"><i class="fas fa-file-invoice-dollar"></i></div>
+                            <span>Pay Bill</span>
+                        </a>
+                        <a href="#" class="action-btn" data-modal="add-funds-modal">
+                            <div class="icon-wrapper"><i class="fas fa-plus"></i></div>
+                            <span>Add Funds</span>
+                        </a>
+                    </div>
+
+                    <h3 class="section-title">Recent Transactions</h3>
+                    <ul class="transaction-list" id="transaction-list-dashboard">
+                        <!-- JS will populate this -->
+                    </ul>
+                </div>
+
+                <!-- Transactions Page -->
+                <div id="transactions-page" class="app-page">
+                    <h3 class="section-title">All Transactions</h3>
+                    <ul class="transaction-list" id="transaction-list-full">
+                        <!-- JS will populate this -->
+                    </ul>
+                </div>
+
+                <!-- Government Services Page -->
+                <div id="gov-page" class="app-page">
+                    <h3 class="section-title">Direct Government Channel</h3>
+                    <div class="list-item" id="receive-subsidy-btn">
+                        <div class="list-item-icon" style="color: var(--success-color);"><i class="fas fa-hand-holding-dollar"></i></div>
+                        <div class="list-item-content">
+                            <h4>Receive Consumption Voucher</h4>
+                            <p>Claim your latest government subsidy.</p>
+                        </div>
+                        <div class="list-item-action"><i class="fas fa-chevron-right"></i></div>
+                    </div>
+                    <div class="list-item" id="pay-tax-btn">
+                        <div class="list-item-icon"><i class="fas fa-landmark"></i></div>
+                        <div class="list-item-content">
+                            <h4>Pay Taxes</h4>
+                            <p>Settle your annual tax bill directly.</p>
+                        </div>
+                        <div class="list-item-action"><i class="fas fa-chevron-right"></i></div>
+                    </div>
+                    <div class="list-item">
+                        <div class="list-item-icon"><i class="fas fa-car"></i></div>
+                        <div class="list-item-content">
+                            <h4>Pay Transport Fine</h4>
+                            <p>Clear outstanding fines instantly.</p>
+                        </div>
+                        <div class="list-item-action"><i class="fas fa-chevron-right"></i></div>
+                    </div>
+                </div>
+
+                <!-- Rewards Page -->
+                <div id="rewards-page" class="app-page">
+                    <div class="rewards-header">
+                        <div class="rewards-points-label">Your Reward Points</div>
+                        <div class="rewards-points" id="reward-points">1250</div>
+                        <i class="fas fa-star" style="color: var(--warning-color);"></i>
+                    </div>
+                    <h3 class="section-title">Missions & Achievements</h3>
+                    <div id="missions-list">
+                        <!-- JS will populate this -->
+                    </div>
+                </div>
+
+                <!-- Settings Page -->
+                <div id="settings-page" class="app-page">
+                    <h3 class="section-title">Wallet Settings</h3>
+                    <div class="list-item setting-item">
+                        <div class="list-item-content">
+                            <h4>Adaptive Privacy (ZKP)</h4>
+                            <p>Anonymize transaction details on ledger.</p>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox" id="privacy-toggle">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    <div class="list-item" id="offline-mode-btn">
+                        <div class="list-item-content">
+                            <h4>Simulate Offline NFC Payment</h4>
+                            <p>Tap to simulate a 20 e-HKD payment.</p>
+                        </div>
+                        <div class="list-item-action"><i class="fas fa-chevron-right"></i></div>
+                    </div>
+                    <div class="list-item">
+                        <div class="list-item-content">
+                            <h4>Manage Wallets</h4>
+                            <p>View keys and recovery options.</p>
+                        </div>
+                        <div class="list-item-action"><i class="fas fa-chevron-right"></i></div>
+                    </div>
+                    <button id="logout-btn">Logout</button>
+                </div>
+
+            </main>
+
+            <nav class="bottom-nav">
+                <div class="nav-item active" data-page="dashboard-page">
+                    <i class="fas fa-home"></i>
+                    <span>Home</span>
+                </div>
+                <div class="nav-item" data-page="transactions-page">
+                    <i class="fas fa-exchange-alt"></i>
+                    <span>History</span>
+                </div>
+                <div class="nav-item" data-page="gov-page">
+                    <i class="fas fa-building-columns"></i>
+                    <span>Gov</span>
+                </div>
+                <div class="nav-item" data-page="rewards-page">
+                    <i class="fas fa-gift"></i>
+                    <span>Rewards</span>
+                </div>
+                <div class="nav-item" data-page="settings-page">
+                    <i class="fas fa-cog"></i>
+                    <span>Settings</span>
+                </div>
+            </nav>
+        </div>
+
+        <!-- Modals -->
+        <div id="send-money-modal" class="modal-overlay">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 class="modal-title">Send Money</h3>
+                    <span class="close-modal">&times;</span>
+                </div>
+                <div class="modal-body">
+                    <select id="send-type">
+                        <option value="p2p">Peer-to-Peer (P2P)</option>
+                        <option value="international">Cross-Border (mBridge)</option>
+                    </select>
+                    <input type="text" id="recipient-name" placeholder="Recipient Name/ID">
+                    <div id="international-fields">
+                        <select id="recipient-currency">
+                            <option value="eCNY">Digital Yuan (e-CNY)</option>
+                            <option value="THB_CBDC">Digital Thai Baht</option>
+                            <option value="AED_CBDC">Digital UAE Dirham</option>
+                        </select>
+                        <p style="font-size: 0.8rem; text-align: center; margin-bottom: 10px; color: #666;">Exchange Rate: 1 e-HKD ≈ 0.92 e-CNY</p>
+                    </div>
+                    <div class="currency-input">
+                        <span>e-HKD</span>
+                        <input type="number" id="send-amount" placeholder="0.00">
+                    </div>
+                    <button class="modal-btn" id="confirm-send-btn">Send Now</button>
+                </div>
+            </div>
+        </div>
+        
+        <div id="receive-money-modal" class="modal-overlay">
+            <div class="modal-content" style="text-align: center;">
+                <div class="modal-header">
+                    <h3 class="modal-title">Receive Money</h3>
+                    <span class="close-modal">&times;</span>
+                </div>
+                <div class="modal-body">
+                    <p>Show this QR code to the sender</p>
+                    <i class="fas fa-qrcode" style="font-size: 150px; margin: 20px 0; color: var(--primary-color);"></i>
+                    <p><strong>Your ID:</strong> CLEMENT_HKID</p>
+                </div>
+            </div>
+        </div>
+
+        <div id="pay-bill-modal" class="modal-overlay">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 class="modal-title">Pay Bill</h3>
+                    <span class="close-modal">&times;</span>
+                </div>
+                <div class="modal-body">
+                    <select id="biller-name">
+                        <option>HK Electric</option>
+                        <option>Towngas</option>
+                        <option>HKT Netvigator</option>
+                    </select>
+                    <div class="currency-input">
+                        <span>e-HKD</span>
+                        <input type="number" id="bill-amount" placeholder="Amount">
+                    </div>
+                    <button class="modal-btn" id="confirm-bill-pay-btn">Confirm Payment</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="add-funds-modal" class="modal-overlay">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 class="modal-title">Add Funds</h3>
+                    <span class="close-modal">&times;</span>
+                </div>
+                <div class="modal-body">
+                    <select>
+                        <option>From Linked Bank Account (HSBC)</option>
+                        <option>Via FPS</option>
+                        <option>Cash-in at 7-Eleven</option>
+                        <option>Convert from Digital Asset</option>
+                    </select>
+                    <div class="currency-input">
+                        <span>e-HKD</span>
+                        <input type="number" placeholder="Amount">
+                    </div>
+                    <button class="modal-btn close-modal">Add Funds</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Toast Notification -->
+        <div id="toast" class="toast"></div>
+
+    </div>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+        // --- STATE MANAGEMENT ---
+        let state = {
+            balance: 15850.00,
+            rewardPoints: 1250,
+            transactions: [
+                { type: 'credit', description: 'Salary Deposit', date: '28 Oct 2024', amount: 30000.00, icon: 'fa-briefcase', category: 'income' },
+                { type: 'debit', description: 'Rent Payment', date: '28 Oct 2024', amount: 15000.00, icon: 'fa-house-chimney', category: 'bill' },
+                { type: 'debit', description: 'Starbucks Coffee', date: '27 Oct 2024', amount: 45.00, icon: 'fa-mug-saucer', category: 'merchant' },
+                { type: 'credit', description: 'Received from Sam', date: '26 Oct 2024', amount: 200.00, icon: 'fa-user-group', category: 'p2p' },
+                { type: 'debit', description: 'MTR Ride', date: '26 Oct 2024', amount: 15.00, icon: 'fa-train-subway', category: 'merchant' }
+            ],
+            missions: [
+                { id: 'first_p2p', text: 'Make your first P2P transfer', points: 100, completed: true },
+                { id: 'first_bill', text: 'Pay your first bill', points: 150, completed: true },
+                { id: 'first_gov', text: 'Use a Government service', points: 200, completed: false },
+                { id: 'first_cross_border', text: 'Make a cross-border payment', points: 300, completed: false },
+                { id: 'five_transactions', text: 'Complete 5 transactions', points: 250, completed: true }
+            ]
+        };
+
+        // --- DOM ELEMENTS ---
+        const loginContainer = document.getElementById('login-container');
+        const appContainer = document.getElementById('app-container');
+        const balanceAmountEl = document.getElementById('balance-amount');
+        const rewardPointsEl = document.getElementById('reward-points');
+        const dashboardTxList = document.getElementById('transaction-list-dashboard');
+        const fullTxList = document.getElementById('transaction-list-full');
+        const missionsListEl = document.getElementById('missions-list');
+        const notificationDot = document.getElementById('notification-dot');
+
+        // --- RENDER FUNCTIONS ---
+        function formatCurrency(amount) {
+            return amount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        }
+
+        function renderBalance() {
+            balanceAmountEl.textContent = formatCurrency(state.balance);
+        }
+
+        function renderTransactions() {
+            dashboardTxList.innerHTML = '';
+            fullTxList.innerHTML = '';
+            
+            const iconBg = { credit: 'var(--success-color)', debit: 'var(--accent-color)' };
+
+            state.transactions.slice(0, 3).forEach(tx => {
+                dashboardTxList.innerHTML += `
+                    <li class="transaction-item">
+                        <div class="transaction-icon" style="background-color: ${iconBg[tx.type]};"><i class="fas ${tx.icon}"></i></div>
+                        <div class="transaction-details">
+                            <div class="description">${tx.description}</div>
+                            <div class="date">${tx.date}</div>
+                        </div>
+                        <div class="transaction-amount ${tx.type}">${tx.type === 'credit' ? '+' : '-'}${formatCurrency(tx.amount)}</div>
+                    </li>
+                `;
+            });
+
+            state.transactions.forEach(tx => {
+                fullTxList.innerHTML += `
+                    <li class="transaction-item">
+                        <div class="transaction-icon" style="background-color: ${iconBg[tx.type]};"><i class="fas ${tx.icon}"></i></div>
+                        <div class="transaction-details">
+                            <div class="description">${tx.description}</div>
+                            <div class="date">${tx.date}</div>
+                        </div>
+                        <div class="transaction-amount ${tx.type}">${tx.type === 'credit' ? '+' : '-'}${formatCurrency(tx.amount)}</div>
+                    </li>
+                `;
+            });
+        }
+
+        function renderRewards() {
+            rewardPointsEl.textContent = state.rewardPoints;
+            missionsListEl.innerHTML = '';
+            state.missions.forEach(mission => {
+                missionsListEl.innerHTML += `
+                    <div class="list-item mission-item ${mission.completed ? 'completed' : ''}">
+                        <div class="list-item-icon"><i class="fas fa-trophy"></i></div>
+                        <div class="list-item-content">
+                            <h4>${mission.text}</h4>
+                            <p>+${mission.points} Points</p>
+                        </div>
+                        <div class="list-item-action">
+                            <i class="fas ${mission.completed ? 'fa-check-circle' : 'fa-circle-notch fa-spin'}"></i>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        // --- UI LOGIC ---
+        function showPage(pageId) {
+            document.querySelectorAll('.app-page').forEach(p => p.classList.remove('active'));
+            document.getElementById(pageId).classList.add('active');
+
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            document.querySelector(`.nav-item[data-page="${pageId}"]`).classList.add('active');
+        }
+
+        function showToast(message, duration = 3000) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.classList.add('show');
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, duration);
+        }
+
+        function showModal(modalId) {
+            document.getElementById(modalId).style.display = 'flex';
+        }
+
+        function hideAllModals() {
+            document.querySelectorAll('.modal-overlay').forEach(m => m.style.display = 'none');
+        }
+
+        function checkMissionCompletion(category) {
+            let missionCompleted = false;
+            let pointsEarned = 0;
+            
+            if (category === 'p2p' && !state.missions.find(m => m.id === 'first_p2p').completed) {
+                const mission = state.missions.find(m => m.id === 'first_p2p');
+                mission.completed = true;
+                pointsEarned = mission.points;
+                missionCompleted = true;
+            }
+            if (category === 'bill' && !state.missions.find(m => m.id === 'first_bill').completed) {
+                const mission = state.missions.find(m => m.id === 'first_bill');
+                mission.completed = true;
+                pointsEarned = mission.points;
+                missionCompleted = true;
+            }
+            if (category === 'gov' && !state.missions.find(m => m.id === 'first_gov').completed) {
+                const mission = state.missions.find(m => m.id === 'first_gov');
+                mission.completed = true;
+                pointsEarned = mission.points;
+                missionCompleted = true;
+            }
+            if (category === 'international' && !state.missions.find(m => m.id === 'first_cross_border').completed) {
+                const mission = state.missions.find(m => m.id === 'first_cross_border');
+                mission.completed = true;
+                pointsEarned = mission.points;
+                missionCompleted = true;
+            }
+
+            if (missionCompleted) {
+                state.rewardPoints += pointsEarned;
+                showToast(`Achievement Unlocked! +${pointsEarned} points!`);
+                renderRewards();
+            }
+        }
+        
+        function addTransaction(type, description, amount, icon, category) {
+            if (type === 'debit' && state.balance < amount) {
+                showToast('Insufficient funds!', 3000);
+                return false;
+            }
+            
+            state.balance += (type === 'credit' ? amount : -amount);
+            state.transactions.unshift({
+                type, description, amount, icon, category,
+                date: new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })
+            });
+            
+            renderBalance();
+            renderTransactions();
+            checkMissionCompletion(category);
+            return true;
+        }
+
+        // --- EVENT LISTENERS ---
+        document.getElementById('login-btn').addEventListener('click', () => {
+            loginContainer.style.display = 'none';
+            appContainer.style.display = 'flex';
+            showToast('Login Successful!');
+        });
+        document.getElementById('iam-smart-login-btn').addEventListener('click', () => {
+            loginContainer.style.display = 'none';
+            appContainer.style.display = 'flex';
+            showToast('Logged in securely with iAM Smart!');
+        });
+        document.getElementById('logout-btn').addEventListener('click', () => {
+            loginContainer.style.display = 'flex';
+            appContainer.style.display = 'none';
+        });
+
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.addEventListener('click', () => showPage(item.dataset.page));
+        });
+
+        document.querySelectorAll('[data-modal]').forEach(item => {
+            item.addEventListener('click', (e) => {
+                e.preventDefault();
+                showModal(item.dataset.modal);
+            });
+        });
+
+        document.querySelectorAll('.close-modal').forEach(item => {
+            item.addEventListener('click', hideAllModals);
+        });
+        
+        // Send money logic
+        document.getElementById('send-type').addEventListener('change', (e) => {
+            const internationalFields = document.getElementById('international-fields');
+            internationalFields.style.display = e.target.value === 'international' ? 'block' : 'none';
+        });
+
+        document.getElementById('confirm-send-btn').addEventListener('click', () => {
+            const amount = parseFloat(document.getElementById('send-amount').value);
+            const recipient = document.getElementById('recipient-name').value;
+            const type = document.getElementById('send-type').value;
+
+            if (!recipient || isNaN(amount) || amount <= 0) {
+                showToast('Please fill all fields correctly.');
+                return;
+            }
+            
+            let description, category, icon;
+            if (type === 'international') {
+                const currency = document.getElementById('recipient-currency').value;
+                description = `To ${recipient} (${currency})`;
+                category = 'international';
+                icon = 'fa-globe';
+            } else {
+                description = `Sent to ${recipient}`;
+                category = 'p2p';
+                icon = 'fa-user-group';
+            }
+
+            if (addTransaction('debit', description, amount, icon, category)) {
+                showToast(`Successfully sent ${formatCurrency(amount)} e-HKD.`);
+                hideAllModals();
+                document.getElementById('send-amount').value = '';
+                document.getElementById('recipient-name').value = '';
+            }
+        });
+
+        // Bill payment logic
+        document.getElementById('confirm-bill-pay-btn').addEventListener('click', () => {
+            const amount = parseFloat(document.getElementById('bill-amount').value);
+            const biller = document.getElementById('biller-name').value;
+
+            if (isNaN(amount) || amount <= 0) {
+                showToast('Please enter a valid amount.');
+                return;
+            }
+            
+            if (addTransaction('debit', `Bill Payment: ${biller}`, amount, 'fa-file-invoice-dollar', 'bill')) {
+                showToast(`Paid ${formatCurrency(amount)} to ${biller}.`);
+                hideAllModals();
+                document.getElementById('bill-amount').value = '';
+            }
+        });
+
+        // Government services logic
+        document.getElementById('receive-subsidy-btn').addEventListener('click', () => {
+            if (addTransaction('credit', 'Gov Consumption Voucher', 5000.00, 'fa-hand-holding-dollar', 'gov')) {
+                showToast('Received 5,000.00 e-HKD from Government!');
+                notificationDot.style.display = 'block';
+            }
+        });
+        document.getElementById('pay-tax-btn').addEventListener('click', () => {
+            if (addTransaction('debit', 'Annual Tax Payment', 8500.00, 'fa-landmark', 'gov')) {
+                showToast('Tax bill of 8,500.00 e-HKD paid.');
+            }
+        });
+
+        // Settings logic
+        document.getElementById('privacy-toggle').addEventListener('change', (e) => {
+            if (e.target.checked) {
+                showToast('Adaptive Privacy (ZKP) Enabled.');
+            } else {
+                showToast('Adaptive Privacy (ZKP) Disabled.');
+            }
+        });
+        document.getElementById('offline-mode-btn').addEventListener('click', () => {
+            if (addTransaction('debit', 'Offline NFC Purchase', 20.00, 'fa-wifi', 'merchant')) {
+                showToast('Offline payment of 20.00 e-HKD successful.');
+            }
+        });
+
+        // --- INITIALIZE APP ---
+        renderBalance();
+        renderTransactions();
+        renderRewards();
+    });
+    </script>
+
+</body>
+</html>
